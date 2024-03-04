@@ -9,9 +9,11 @@ from spotipy.exceptions import SpotifyException
 
 # TODO - make config optional
 # TODO - remove config from git
-# TODO - SANITIZE OUTPUT
+# TODO - SANITIZE OUTPUT - possibly use formatted txt
 # TODO - fix alias instructions
 # TODO - optimize and clean up code
+# TODO - add example config file contents to README
+
 
 def read_config():
     # Read the configuration file

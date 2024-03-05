@@ -7,10 +7,10 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.exceptions import SpotifyException
 
 
-# TODO - make config optional, add example to readme
+# TODO - make config optional
 # TODO - remove config from git
-# TODO - SANITIZE OUTPUT - possibly use formatted txt
-# TODO - fix alias instructions
+# TODO - sanitize output
+# TODO - test readme instructions
 # TODO - optimize and clean up code
 
 

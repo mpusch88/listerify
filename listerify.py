@@ -8,6 +8,7 @@ from spotipy.exceptions import SpotifyException
 
 
 # TODO - make config optional
+# TODO - generate config.ini if not found (?)
 # TODO - remove config from git
 # TODO - sanitize output
 # TODO - test readme instructions

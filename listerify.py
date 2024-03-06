@@ -15,6 +15,14 @@ from spotipy.exceptions import SpotifyException
 # TODO - sanitize output
 # TODO - test readme instructions
 # TODO - optimize and clean up code
+# TODO - display message if no songs in playlist
+# TODO - add requirements.txt
+# TODO - add error handling for missing config.ini
+# TODO - add error handling for missing playlistID
+# TODO - add error handling for missing exportPath
+# TODO - add error handling for invalid exportPath
+# TODO - add error handling for invalid playlistID
+# TODO - add error handling for invalid Spotify API credentials
 
 
 def read_config():

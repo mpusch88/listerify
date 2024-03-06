@@ -101,7 +101,7 @@ def write_tracks_to_csv(exportPath, results, playlist_name):
             artist_names = [artist["name"] for artist in track["artists"]]
 
             # Concatenate track name and artist names into a single string
-            track_and_artist = f"{track['name']} by {', '.join(artist_names)}"
+            track_and_artist = f"{track['name']} {', '.join(artist_names)}"
 
             # Write the string to the CSV file as a single column
             writer.writerow([track_and_artist])

@@ -63,7 +63,7 @@ Where:
 
 - `client_id` is your Spotify application's client ID. (example: `client_id = 1234567890abcdef1234567890abcdef`)
 - `client_secret` is your Spotify application's client secret. (example: `client_secret = 987654321`)
-- `exportPath` is the path to the CSV file where the track names will be written. Can be left empty to use the default path. (example: `exportPath = C:\Users\user\Desktop\tracks.csv`)
+- `exportPath` is the path to the CSV file where the track names will be written. Can be left empty to use the default path. (example: `exportPath = "C:\Users\user\Desktop\tracks.csv"`)
 - `defaultPlaylistID` is the default Spotify playlist ID to use if none is provided via command-line argument. Can be left empty to prompt the user for a playlist ID. (example: `defaultPlaylistID = 5LNJmXPclDxbncKlzqYVdw`)
 
 ## Usage

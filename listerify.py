@@ -7,6 +7,8 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.exceptions import SpotifyException
 
 
+# TODO - macOS only - uninstall autoenv, install direnv (?)
+# TODO - remove .env files (?)
 # TODO - make config optional
 # TODO - generate config.ini if not found (?)
 # TODO - remove config from git

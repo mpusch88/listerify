@@ -7,6 +7,7 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.exceptions import SpotifyException
 
 
+# TODO - remove .env files (?)
 # TODO - make config optional
 # TODO - remove config from git
 # TODO - sanitize output

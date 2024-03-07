@@ -7,7 +7,6 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.exceptions import SpotifyException
 
 
-# TODO - rename to zigzag (?)
 # TODO - add playlist name to first row of output file
 # TODO - generate config.ini if not found or make config optional (?)
 # TODO - sanitize output (special chars, 'and', etc.)
@@ -20,6 +19,7 @@ from spotipy.exceptions import SpotifyException
 # TODO - add error handling for invalid exportPath
 # TODO - add error handling for invalid playlistID
 # TODO - add error handling for invalid Spotify API credentials
+# TODO - rename to zigzag (?)
 
 
 def read_config():

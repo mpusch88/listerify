@@ -7,6 +7,7 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.exceptions import SpotifyException
 
 
+# TODO - add playlist name to first row of output file
 # TODO - generate config.ini if not found or make config optional (?)
 # TODO - sanitize output
 # TODO - test readme instructions for all system types

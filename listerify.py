@@ -7,16 +7,11 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.exceptions import SpotifyException
 
 
-# TODO - macOS only - uninstall autoenv, install direnv (?)
-# TODO - remove .env files (?)
-# TODO - make config optional
-# TODO - generate config.ini if not found (?)
-# TODO - remove config from git
+# TODO - generate config.ini if not found or make config optional (?)
 # TODO - sanitize output
-# TODO - test readme instructions
-# TODO - optimize and clean up code
+# TODO - test readme instructions for all system types
 # TODO - display message if no songs in playlist
-# TODO - add requirements.txt
+# TODO - optimize and clean up code
 # TODO - add error handling for missing config.ini
 # TODO - add error handling for missing playlistID
 # TODO - add error handling for missing exportPath
@@ -93,8 +88,10 @@ def write_tracks_to_csv(exportPath, results, playlist_name):
     # Clean export path
     exportPath = os.path.join(exportPath, "")
 
-    # Open a CSV file on the desktop
-    with open(os.path.join(exportPath, "playlist.csv"), "w", newline="") as file:
+    playlist_name = f"{playlist_name}.csv"
+
+    # Write the track names and artist names to a CSV file
+    with open(os.path.join(exportPath, playlist_name), "w", newline="") as file:
         if not file.writable():
             print("Error: The file is not writable.")
             sys.exit(1)
@@ -116,11 +113,12 @@ def write_tracks_to_csv(exportPath, results, playlist_name):
 
         # If all tracks were written to the file, display the total number of tracks
         print(
-            f"Successfully wrote {results['total']} {'track' if results['total'] == 1 else 'tracks'} to {exportPath}{playlist_name}.csv."
+            f"Successfully wrote {results['total']} {'track' if results['total'] == 1 else 'tracks'} to {exportPath}{playlist_name}"
         )
 
 
 def main():
+    print("Listerify v1.0.0\n")
     client_id, client_secret, exportPath, playlistID = read_config()
     playlist_id = get_playlist_id(playlistID)
 

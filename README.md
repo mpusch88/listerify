@@ -1,6 +1,6 @@
 # Listerify
 
-Python program that uses the Spotify Web API to fetch and print the names of all tracks in a given Spotify playlist.
+Listerify is a Python script that uses the Spotify API to save Spotify playlists to a CSV file.
 
 ## Requirements
 

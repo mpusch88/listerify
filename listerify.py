@@ -7,9 +7,10 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.exceptions import SpotifyException
 
 
+# TODO - rename to zigzag (?)
 # TODO - add playlist name to first row of output file
 # TODO - generate config.ini if not found or make config optional (?)
-# TODO - sanitize output
+# TODO - sanitize output (special chars, 'and', etc.)
 # TODO - test readme instructions for all system types
 # TODO - display message if no songs in playlist
 # TODO - optimize and clean up code

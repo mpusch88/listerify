@@ -1,4 +1,3 @@
-import csv
 import os
 import sys
 import configparser
@@ -7,18 +6,15 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.exceptions import SpotifyException
 
 
-# TODO - add playlist name to first row of output file
+# TODO - add CLI args for playlistID, exportPath, and CSV export option
 # TODO - generate config.ini if not found or make config optional (?)
-# TODO - sanitize output (special chars, 'and', etc.)
 # TODO - test readme instructions for all system types
-# TODO - display message if no songs in playlist
 # TODO - optimize and clean up code
 # TODO - add error handling for missing config.ini
 # TODO - add error handling for missing playlistID
+# TODO - add error handling for invalid playlistID
 # TODO - add error handling for missing exportPath
 # TODO - add error handling for invalid exportPath
-# TODO - add error handling for invalid playlistID
-# TODO - add error handling for invalid Spotify API credentials
 # TODO - rename to zigzag (?)
 
 
@@ -59,7 +55,6 @@ def get_playlist_id(playlistID):
 def get_playlist_name(sp, playlist_id):
     # Get the playlist metadata
     try:
-        print("Fetching playlist metadata...")
         playlist = sp.playlist(playlist_id)
     except SpotifyException:
         print(
@@ -74,7 +69,6 @@ def get_playlist_name(sp, playlist_id):
 def get_playlist_tracks(sp, playlist_id):
     # Get the playlist tracks
     try:
-        print("Fetching playlist tracks...")
         results = sp.playlist_tracks(playlist_id)
     except SpotifyException:
         print(
@@ -83,35 +77,59 @@ def get_playlist_tracks(sp, playlist_id):
 
         sys.exit(1)
 
-    return results
+    if results["total"] == 0:
+        print(f"Error: The playlist with ID {playlist_id} does not contain any tracks.")
+        sys.exit(1)
+    else:
+        return results
 
 
-def write_tracks_to_csv(exportPath, results, playlist_name):
+def write_tracks(exportPath, results, playlist_name):
     # Clean export path
     exportPath = os.path.join(exportPath, "")
 
-    playlist_name = f"{playlist_name}.csv"
+    playlist_name = f"{playlist_name}.txt"
 
-    # Write the track names and artist names to a CSV file
-    with open(os.path.join(exportPath, playlist_name), "w", newline="") as file:
+    # Write the track names and artist names to a text file
+    with open(os.path.join(exportPath, playlist_name), "w") as file:
         if not file.writable():
             print("Error: The file is not writable.")
             sys.exit(1)
-
-        writer = csv.writer(file)
-
-        # Write the track names and artist names to the CSV file
-        print("Writing tracks to CSV file...")
 
         for item in results["items"]:
             track = item["track"]
             artist_names = [artist["name"] for artist in track["artists"]]
 
             # Concatenate track name and artist names into a single string
-            track_and_artist = f"{track['name']} {', '.join(artist_names)}"
+            track_and_artist = f"{track['name']} {' '.join(artist_names)}"
 
-            # Write the string to the CSV file as a single column
-            writer.writerow([track_and_artist])
+            # remove 'feat.', 'ft.', 'ft', 'featuring' from track_and_artist
+            track_and_artist = track_and_artist.replace("featuring", "")
+            track_and_artist = track_and_artist.replace("feat.", "")
+            track_and_artist = track_and_artist.replace("ft.", "")
+            track_and_artist = track_and_artist.replace("ft", "")
+
+            # remove all non alphanumeric characters from track_and_artist
+            track_and_artist = "".join(
+                e for e in track_and_artist if e.isalnum() or e.isspace()
+            )
+
+            # Replace unknown ascii characters in track_and_artist with blank spaces
+            track_and_artist = "".join(
+                [c if ord(c) < 128 else " " for c in track_and_artist]
+            )
+
+            # remove duplicate words from track_and_artist
+            track_and_artist = " ".join(dict.fromkeys(track_and_artist.split()))
+
+            # remove double spaces from track_and_artist
+            track_and_artist = track_and_artist.replace("  ", " ")
+
+            # Write the string to the text file
+            if item != results["items"][-1]:
+                file.write(f'"{track_and_artist}", ')
+            else:
+                file.write(f'"{track_and_artist}"')
 
         # If all tracks were written to the file, display the total number of tracks
         print(
@@ -120,21 +138,24 @@ def write_tracks_to_csv(exportPath, results, playlist_name):
 
 
 def main():
-    print("Listerify v1.0.0\n")
     client_id, client_secret, exportPath, playlistID = read_config()
     playlist_id = get_playlist_id(playlistID)
 
     # Create a Spotify client
-    client_credentials_manager = SpotifyClientCredentials(
-        client_id=client_id, client_secret=client_secret
-    )
+    try:
+        client_credentials_manager = SpotifyClientCredentials(
+            client_id=client_id, client_secret=client_secret
+        )
+    except SpotifyException:
+        print("Error: Invalid Spotify API credentials.")
+        sys.exit(1)
 
     sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
     playlist_name = get_playlist_name(sp, playlist_id)
     results = get_playlist_tracks(sp, playlist_id)
 
-    write_tracks_to_csv(exportPath, results, playlist_name)
+    write_tracks(exportPath, results, playlist_name)
 
 
 if __name__ == "__main__":

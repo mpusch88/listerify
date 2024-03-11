@@ -6,6 +6,7 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.exceptions import SpotifyException
 
 
+# TODO - list filesnames that contain invalid characters before writing to file
 # TODO - add CLI args for playlistID, exportPath, and CSV export option
 # TODO - generate config.ini if not found or make config optional (?)
 # TODO - test readme instructions for all system types

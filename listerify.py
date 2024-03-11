@@ -127,9 +127,9 @@ def write_tracks(exportPath, results, playlist_name):
 
             # Write the string to the text file
             if item != results["items"][-1]:
-                file.write(f'"{track_and_artist}", ')
+                file.write(f'{track_and_artist}, ')
             else:
-                file.write(f'"{track_and_artist}"')
+                file.write(f'{track_and_artist}')
 
         # If all tracks were written to the file, display the total number of tracks
         print(

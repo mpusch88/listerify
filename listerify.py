@@ -99,6 +99,8 @@ def write_tracks(exportPath, results, playlist_name):
             print("Error: The file is not writable.")
             sys.exit(1)
 
+        file.write(",")
+
         for item in results["items"]:
             track = item["track"]
             artist_names = [artist["name"] for artist in track["artists"]]
@@ -140,6 +142,23 @@ def write_tracks(exportPath, results, playlist_name):
         )
 
 
+def copy_to_clipboard(exportPath, playlist_name):
+    # Clean export path
+    playlist_name = f"{playlist_name}.txt"
+
+    # Copy the text file to the clipboard
+    if sys.platform == "win32":
+        os.system(f"clip < {os.path.join(exportPath, playlist_name)}")
+    elif sys.platform == "darwin":
+        os.system(f"pbcopy < {os.path.join(exportPath, playlist_name)}")
+    elif sys.platform == "linux":
+        os.system(
+            f"xclip -selection clipboard {os.path.join(exportPath, playlist_name)}"
+        )
+
+    print("Copied to clipboard.")
+
+
 def main():
     client_id, client_secret, exportPath, playlistID = read_config()
     playlist_id = get_playlist_id(playlistID)
@@ -159,6 +178,7 @@ def main():
     results = get_playlist_tracks(sp, playlist_id)
 
     write_tracks(exportPath, results, playlist_name)
+    copy_to_clipboard(exportPath, playlist_name)
 
 
 if __name__ == "__main__":

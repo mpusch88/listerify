@@ -93,6 +93,7 @@ def write_tracks(exportPath, results, playlist_name):
 
     playlist_name = f"{playlist_name}.txt"
 
+    # TODO - save results to variable, then optionally write to file
     # Write the track names and artist names to a text file
     with open(os.path.join(exportPath, playlist_name), "w") as file:
         if not file.writable():
@@ -180,7 +181,7 @@ def main():
     results = get_playlist_tracks(sp, playlist_id, playlist_name)
 
     # TODO - add arguments to enable and specify export format
-    # write_tracks(exportPath, results, playlist_name)
+    write_tracks(exportPath, results, playlist_name)
     copy_to_clipboard(exportPath, playlist_name)
 
 

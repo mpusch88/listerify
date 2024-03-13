@@ -149,8 +149,10 @@ def copy_to_clipboard(exportPath, playlist_name):
     # Copy the text file to the clipboard
     if sys.platform == "win32":
         os.system(f"clip < {os.path.join(exportPath, playlist_name)}")
+    # TODO - test on mac
     elif sys.platform == "darwin":
         os.system(f"pbcopy < {os.path.join(exportPath, playlist_name)}")
+    # TODO - test on linux
     elif sys.platform == "linux":
         os.system(
             f"xclip -selection clipboard {os.path.join(exportPath, playlist_name)}"

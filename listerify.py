@@ -179,6 +179,7 @@ def main():
     playlist_name = get_playlist_name(sp, playlist_id)
     results = get_playlist_tracks(sp, playlist_id)
 
+    # TODO - add arguments to enable and specify export format
     write_tracks(exportPath, results, playlist_name)
     copy_to_clipboard(exportPath, playlist_name)
 

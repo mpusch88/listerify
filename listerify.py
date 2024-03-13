@@ -69,7 +69,7 @@ def get_playlist_name(sp, playlist_id):
     return playlist["name"]
 
 
-def get_playlist_tracks(sp, playlist_id):
+def get_playlist_tracks(sp, playlist_id, playlist_name):
     # Get the playlist tracks
     try:
         results = sp.playlist_tracks(playlist_id)
@@ -81,7 +81,7 @@ def get_playlist_tracks(sp, playlist_id):
         sys.exit(1)
 
     if results["total"] == 0:
-        print(f"Error: The playlist with ID {playlist_id} does not contain any tracks.")
+        print(f"Error: Playlist '{playlist_name}' does not contain any tracks.")
         sys.exit(1)
     else:
         return results
@@ -177,10 +177,10 @@ def main():
     sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
     playlist_name = get_playlist_name(sp, playlist_id)
-    results = get_playlist_tracks(sp, playlist_id)
+    results = get_playlist_tracks(sp, playlist_id, playlist_name)
 
     # TODO - add arguments to enable and specify export format
-    write_tracks(exportPath, results, playlist_name)
+    # write_tracks(exportPath, results, playlist_name)
     copy_to_clipboard(exportPath, playlist_name)
 
 

@@ -142,12 +142,10 @@ def write_tracks(exportPath, results, playlist_name):
         )
 
 
-# TODO - fix output formatting
 def copy_to_clipboard(results):
     resultList = []
-    resultList.append(",")
 
-    # TODO - handle this elsewhere
+    # TODO - handle this elsewhere (?)
     # Convert results to a string
     for item in results["items"]:
         track = item["track"]
@@ -178,19 +176,19 @@ def copy_to_clipboard(results):
         # remove double spaces from track_and_artist
         track_and_artist = track_and_artist.replace("  ", " ")
 
-        # Write the string to the text file
-        if item != results["items"][-1]:
-            resultList.append(f"'{track_and_artist}', ")
-        else:
-            resultList.append(f"'{track_and_artist}'")
+        # Append the track_and_artist to the resultList
+        resultList.append(track_and_artist)
 
-    # Copy the results to the clipboard
+    # Join the resultList with commas and add a leading comma
+    result_string = ", " + ", ".join(resultList)
+
+    # Copy the result_string to the clipboard
     if sys.platform == "win32":
-        os.system(f"echo {resultList} | clip")
+        os.system(f"echo {result_string} | clip")
     elif sys.platform == "darwin":
-        os.system(f'echo "{resultList}" | pbcopy')
+        os.system(f'echo "{result_string}" | pbcopy')
     elif sys.platform == "linux":
-        os.system(f'echo "{resultList}" | xclip -selection clipboard')
+        os.system(f'echo "{result_string}" | xclip -selection clipboard')
 
     print("Copied to clipboard.")
 

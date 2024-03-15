@@ -184,13 +184,14 @@ def copy_to_clipboard(results):
 
     # Copy the result_string to the clipboard
     if sys.platform == "win32":
+        # TODO - remove newline from end of result_string
         os.system(f"echo {result_string} | clip")
     elif sys.platform == "darwin":
         os.system(f'echo "{result_string}" | pbcopy')
     elif sys.platform == "linux":
         os.system(f'echo "{result_string}" | xclip -selection clipboard')
 
-    print("Copied to clipboard.")
+    print(f"Copied {results['total']} {'track' if results['total'] == 1 else 'tracks'} to clipboard.")
 
 
 # TODO - use import_tracks function to clean the imported list of track / artist names from file

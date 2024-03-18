@@ -203,6 +203,48 @@ searchList = [
 ]
 
 
+# Overview:
+
+# parse_args()
+# Arguments: None
+# Return Type: Namespace object
+
+# read_config()
+# Arguments: None
+# Return Type: Tuple (client_id: str, client_secret: str, exportPath: str, playlistID: str)
+
+# import_tracks(exportPath, args)
+# Arguments: exportPath (str), args (Namespace object)
+# Return Type: list
+
+# get_playlist_id(playlistID)
+# Arguments: playlistID (str)
+# Return Type: str
+
+# get_playlist_name(sp, playlist_id)
+# Arguments: sp (spotipy.Spotify object), playlist_id (str)
+# Return Type: str
+
+# get_playlist_tracks(sp, playlist_id, playlist_name)
+# Arguments: sp (spotipy.Spotify object), playlist_id (str), playlist_name (str)
+# Return Type: dict
+
+# clean_tracks(resultsList)
+# Arguments: resultsList (list)
+# Return Type: list
+
+# copy_to_clipboard(results)
+# Arguments: results (dict)
+# Return Type: None
+
+# write_tracks(exportPath, results, playlist_name)
+# Arguments: exportPath (str), results (dict), playlist_name (str)
+# Return Type: None
+
+# main()
+# Arguments: None
+# Return Type: None
+
 
 # TODO - add / update shell profile instructions to readme
 # TODO - add option to clean imported list of track / artist names from file

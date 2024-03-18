@@ -248,6 +248,7 @@ testList = [
 # TODO - add / update shell profile instructions to readme
 # TODO - add option to clean imported list of track / artist names from file
 # TODO - add option for export format (CSV, TXT, etc.)
+# TODO - remove "with" from track names if name contains more than 5 words
 # TODO - list filesnames that contain invalid characters before writing to file
 # TODO - add CLI args for playlistID, exportPath, and CSV export option
 # TODO - generate config.ini if not found or make config optional (?)

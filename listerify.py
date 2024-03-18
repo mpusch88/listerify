@@ -7,8 +7,7 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.exceptions import SpotifyException
 
 
-# TODO - use as a test list
-searchList = [
+testList = [
     "Stories In Light Trilucid",
     "Supermode Tell Me Why James Carter Extended Remix",
     "Time Moves So Fast PROFF Volen Sentirs Timestop Remix BT Sentir",

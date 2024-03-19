@@ -205,7 +205,7 @@ testList = [
 # Overview:
 
 # parse_args()
-# Returns: args
+# Returns: arg.playlist, arg.path, arg.txt, arg.csv, arg.clean, arg.importPath, ..?
 
 # read_config()
 # Returns: client_id, client_secret, exportPath, playlistID, importPath
@@ -339,6 +339,7 @@ def import_tracks(importPath):
     #     resultList.append(trackList)
 
     return dirty_list
+
 
 def get_playlist_id(playlistID):
     # Check if an ID was provided
@@ -517,15 +518,28 @@ def main():
             print("Error: Invalid export path.")
             sys.exit(1)
 
+
     # TODO - rename playlistID or playlist_id
     client_id, client_secret, exportPath, playlistID = read_config()
 
+
+    # TODO - verify arguments
     # If command-line arguments were provided, use them instead of the values from the config file
     if args.playlist:
         playlistID = args.playlist
     if args.path:
         exportPath = args.path
 
+
+
+    # TODO - enable condition
+    # if args.importPath
+    # {
+    #     import_tracks(importPath)
+    #     Returns: dirty_list
+    # }
+    # else
+    # {
     # Get the playlist ID
     playlist_id = get_playlist_id(playlistID)
 
@@ -543,6 +557,9 @@ def main():
     # Get the playlist name and tracks
     playlist_name = get_playlist_name(playlist_id, sp)
     cleaned_list = get_playlist_tracks(playlist_id, playlist_name, sp)
+    # }
+    
+    
 
     if args.csv:
         playlist_name = f"{playlist_name}.csv"

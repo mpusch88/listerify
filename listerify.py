@@ -205,46 +205,40 @@ testList = [
 # Overview:
 
 # parse_args()
-# Arguments: None
-# Return Type: Namespace object
+# Returns: args
 
 # read_config()
-# Arguments: None
-# Return Type: Tuple (client_id: str, client_secret: str, exportPath: str, playlistID: str)
+# Returns: client_id, client_secret, exportPath, playlistID, importPath
 
-# import_tracks(exportPath, args)
-# Arguments: exportPath (str), args (Namespace object)
-# Return Type: list
+# Either:
+# {
+    # import_tracks(importPath)
+    # Returns: dirty_list
+# }
 
-# get_playlist_id(playlistID)
-# Arguments: playlistID (str)
-# Return Type: str
+# Or:
+# {
+    # get_playlist_id(playlistID)
+    # Returns: playlistID
 
-# get_playlist_name(sp, playlist_id)
-# Arguments: sp (spotipy.Spotify object), playlist_id (str)
-# Return Type: str
+    # get_playlist_name(playlist_id, sp)
+    # Returns: playlist_name
 
-# get_playlist_tracks(sp, playlist_id, playlist_name)
-# Arguments: sp (spotipy.Spotify object), playlist_id (str), playlist_name (str)
-# Return Type: dict
+    # get_playlist_tracks(playlist_id, playlist_name, sp)
+    # Returns: dirty_list
+# }
 
-# clean_tracks(resultsList)
-# Arguments: resultsList (list)
-# Return Type: list
+# clean_tracks(dirty_list)
+# Returns: cleaned_list
 
-# copy_to_clipboard(results)
-# Arguments: results (dict)
-# Return Type: None
+# copy_to_clipboard(cleaned_list)
+# Returns: success boolean
 
-# write_tracks(exportPath, results, playlist_name)
-# Arguments: exportPath (str), results (dict), playlist_name (str)
-# Return Type: None
-
-# main()
-# Arguments: None
-# Return Type: None
+# write_tracks(cleaned_list, playlist_name, exportPath)
+# Returns: success boolean
 
 
+# TODO - use arg names listed above
 # TODO - add / update shell profile instructions to readme
 # TODO - add option to clean imported list of track / artist names from file
 # TODO - add option for export format (CSV, TXT, etc.)
@@ -254,6 +248,8 @@ testList = [
 # TODO - generate config.ini if not found or make config optional (?)
 # TODO - test readme instructions for all system types
 # TODO - optimize and clean up code
+# TODO - add config parameter for default export type / format
+# TODO - add config parameter for import files (spotify lists have priority) (importPath)
 # TODO - add error handling for missing config.ini
 # TODO - add error handling for missing playlistID
 # TODO - add error handling for invalid playlistID
@@ -312,10 +308,13 @@ def read_config():
 
 
 # TODO - use import_tracks function to clean the imported list of track / artist names from file or array
-def import_tracks():
-    # # Clean export path
-    # exportPath = os.path.join(exportPath, "")
-    # resultList = []
+def import_tracks(importPath):
+    dirty_list = []
+
+    # Clean import path
+    importPath = os.path.join(importPath, "")
+
+    # TODO - import dirty tracks from file
 
     # # Read the file
     # with open(os.path.join(exportPath, args.clean), "r") as file:
@@ -339,8 +338,7 @@ def import_tracks():
     #     # Write the cleaned list to resultList
     #     resultList.append(trackList)
 
-    return "list of imported tracks"
-
+    return dirty_list
 
 def get_playlist_id(playlistID):
     # Check if an ID was provided
@@ -353,7 +351,7 @@ def get_playlist_id(playlistID):
     return playlist_id
 
 
-def get_playlist_name(sp, playlist_id):
+def get_playlist_name(playlist_id, sp):
     # Get the playlist metadata
     try:
         playlist = sp.playlist(playlist_id)
@@ -367,10 +365,10 @@ def get_playlist_name(sp, playlist_id):
     return playlist["name"]
 
 
-def get_playlist_tracks(sp, playlist_id, playlist_name):
+def get_playlist_tracks(playlist_id, playlist_name, sp):
     # Get the playlist tracks
     try:
-        results = sp.playlist_tracks(playlist_id)
+        dirty_list = sp.playlist_tracks(playlist_id)
     except SpotifyException:
         print(
             f"Error: The playlist with ID {playlist_id} does not exist or could not be accessed."
@@ -378,25 +376,30 @@ def get_playlist_tracks(sp, playlist_id, playlist_name):
 
         sys.exit(1)
 
-    if results["total"] == 0:
+    if dirty_list["total"] == 0:
         print(f"Error: Playlist '{playlist_name}' does not contain any tracks.")
         sys.exit(1)
     else:
-        return results
+        return dirty_list
 
 
 # TODO - use clean_tracks function to clean any list of track / artist names
-def clean_tracks(resultsList):
+def clean_tracks(dirty_list):
 
-    return True
+    cleaned_list = []
+
+    # TODO - clean dirty_list
+
+    return cleaned_list
 
 
-def copy_to_clipboard(results):
+def copy_to_clipboard(cleaned_list):
+    # TODO - rename resultList (?)
     resultList = []
 
     # TODO - handle this elsewhere (?)
     # Convert results to a string
-    for item in results["items"]:
+    for item in cleaned_list["items"]:
         track = item["track"]
         artist_names = [artist["name"] for artist in track["artists"]]
 
@@ -441,13 +444,14 @@ def copy_to_clipboard(results):
         os.system(f'echo "{result_string}" | xclip -selection clipboard')
 
     print(
-        f"Copied {results['total']} {'track' if results['total'] == 1 else 'tracks'} to clipboard."
+        f"Copied {cleaned_list['total']} {'track' if cleaned_list['total'] == 1 else 'tracks'} to clipboard."
     )
 
 
-def write_tracks(exportPath, results, playlist_name):
+def write_tracks(cleaned_list, playlist_name, exportPath):
     # Clean export path
     exportPath = os.path.join(exportPath, "")
+    
     # Write the tracks to a file
     with open(os.path.join(exportPath, playlist_name), "w") as file:
         if not file.writable():
@@ -456,7 +460,7 @@ def write_tracks(exportPath, results, playlist_name):
 
         file.write(",")
 
-        for item in results["items"]:
+        for item in cleaned_list["items"]:
             track = item["track"]
             artist_names = [artist["name"] for artist in track["artists"]]
 
@@ -487,14 +491,14 @@ def write_tracks(exportPath, results, playlist_name):
             track_and_artist = track_and_artist.replace("  ", " ")
 
             # Write the string to the text file
-            if item != results["items"][-1]:
+            if item != cleaned_list["items"][-1]:
                 file.write(f"'{track_and_artist}', ")
             else:
                 file.write(f"'{track_and_artist}'")
 
         # If all tracks were written to the file, display the total number of tracks
         print(
-            f"Successfully wrote {results['total']} {'track' if results['total'] == 1 else 'tracks'} to {exportPath}{playlist_name}"
+            f"Successfully wrote {cleaned_list['total']} {'track' if cleaned_list['total'] == 1 else 'tracks'} to {exportPath}{playlist_name}"
         )
 
 
@@ -537,17 +541,17 @@ def main():
     sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
     # Get the playlist name and tracks
-    playlist_name = get_playlist_name(sp, playlist_id)
-    results = get_playlist_tracks(sp, playlist_id, playlist_name)
+    playlist_name = get_playlist_name(playlist_id, sp)
+    cleaned_list = get_playlist_tracks(playlist_id, playlist_name, sp)
 
     if args.csv:
         playlist_name = f"{playlist_name}.csv"
-        write_tracks(exportPath, results, playlist_name)
+        write_tracks(cleaned_list, playlist_name, exportPath)
     elif args.txt:
         playlist_name = f"{playlist_name}.txt"
-        write_tracks(exportPath, results, playlist_name)
+        write_tracks(cleaned_list, playlist_name, exportPath)
     else:
-        copy_to_clipboard(results)
+        copy_to_clipboard(cleaned_list)
 
 
 if __name__ == "__main__":

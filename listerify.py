@@ -269,16 +269,22 @@ def parse_args():
         "--path", type=str, help="The path where the playlist will be exported."
     )
     parser.add_argument(
-        "--txt", action="store_true", help="Export the playlist as a TXT file."
-    )
-    parser.add_argument(
-        "--csv", action="store_true", help="Export the playlist as a CSV file."
+        "--importPath",
+        type=str,
+        nargs="?",
+        help="The path where the imported list of track / artist names is located.",
     )
     parser.add_argument(
         "--clean",
         type=str,
         nargs="?",
         help="Clean the imported list of track / artist names from file.",
+    )
+    parser.add_argument(
+        "--txt", action="store_true", help="Export the playlist as a TXT file."
+    )
+    parser.add_argument(
+        "--csv", action="store_true", help="Export the playlist as a CSV file."
     )
 
     return parser.parse_args()

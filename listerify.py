@@ -205,10 +205,17 @@ testList = [
 # Overview:
 
 # parse_args()
-# Returns: arg.playlist, arg.path, arg.txt, arg.csv, arg.clean, arg.importPath, ..?
+# Returns:
+# args.playlist
+# args.path
+# args.importPath
+# args.clean
+# args.txt
+# args.csv
+
 
 # read_config()
-# Returns: client_id, client_secret, exportPath, playlistID, importPath
+# Returns: client_id, client_secret, importPath, exportPath, playlistID
 
 # Either:
 # {
@@ -298,8 +305,10 @@ def read_config():
     # Get the Spotify API credentials from the configuration file
     client_id = config.get("Spotify", "client_id")
     client_secret = config.get("Spotify", "client_secret")
-    exportPath = config.get("Spotify", "exportPath")
     playlistID = config.get("Spotify", "defaultPlaylistID")
+    clean = config.get("General", "clean")
+    exportPath = config.get("General", "exportPath")
+    importPath = config.get("General", "importPath")
 
     # Validate configuration
     if not client_id or not client_secret:
@@ -310,7 +319,7 @@ def read_config():
         print("Error: Invalid export path.")
         sys.exit(1)
 
-    return client_id, client_secret, exportPath, playlistID
+    return client_id, client_secret, exportPath, playlistID, importPath, clean
 
 
 # TODO - use import_tracks function to clean the imported list of track / artist names from file or array

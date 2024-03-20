@@ -207,9 +207,8 @@ testList = [
 # parse_args()
 # Returns:
 # args.playlist
-# args.path
+# args.exportPath
 # args.importPath
-# args.clean
 # args.txt
 # args.csv
 
@@ -219,20 +218,20 @@ testList = [
 
 # Either:
 # {
-    # import_tracks(importPath)
-    # Returns: dirty_list
+# import_tracks(importPath)
+# Returns: dirty_list
 # }
 
 # Or:
 # {
-    # get_playlist_id(playlistID)
-    # Returns: playlistID
+# get_playlist_id(playlistID)
+# Returns: playlistID
 
-    # get_playlist_name(playlist_id, sp)
-    # Returns: playlist_name
+# get_playlist_name(playlist_id, sp)
+# Returns: playlist_name
 
-    # get_playlist_tracks(playlist_id, playlist_name, sp)
-    # Returns: dirty_list
+# get_playlist_tracks(playlist_id, playlist_name, sp)
+# Returns: dirty_list
 # }
 
 # clean_tracks(dirty_list)
@@ -273,19 +272,13 @@ def parse_args():
         "playlist", type=str, nargs="?", help="The URL or ID of the Spotify playlist."
     )
     parser.add_argument(
-        "--path", type=str, help="The path where the playlist will be exported."
+        "--exportPath", type=str, help="The path where the playlist will be exported."
     )
     parser.add_argument(
         "--importPath",
         type=str,
         nargs="?",
         help="The path where the imported list of track / artist names is located.",
-    )
-    parser.add_argument(
-        "--clean",
-        type=str,
-        nargs="?",
-        help="Clean the imported list of track / artist names from file.",
     )
     parser.add_argument(
         "--txt", action="store_true", help="Export the playlist as a TXT file."
@@ -305,21 +298,28 @@ def read_config():
     # Get the Spotify API credentials from the configuration file
     client_id = config.get("Spotify", "client_id")
     client_secret = config.get("Spotify", "client_secret")
-    playlistID = config.get("Spotify", "defaultPlaylistID")
-    clean = config.get("General", "clean")
-    exportPath = config.get("General", "exportPath")
-    importPath = config.get("General", "importPath")
 
-    # Validate configuration
+    # Validate the Spotify API credentials
     if not client_id or not client_secret:
         print("Error: Invalid Spotify API credentials.")
         sys.exit(1)
 
+    # Set remaining configuration values
+    playlistID = config.get("Spotify", "defaultPlaylistID")
+    exportPath = config.get("General", "exportPath")
+    importPath = config.get("General", "importPath")
+
+    # Test paths
     if not os.path.isdir(exportPath):
         print("Error: Invalid export path.")
         sys.exit(1)
 
-    return client_id, client_secret, exportPath, playlistID, importPath, clean
+    if importPath and not os.path.isdir(importPath):
+        print("Error: Invalid import path.")
+        sys.exit(1)
+
+    # TODO - ensure correct order
+    return client_id, client_secret, playlistID, exportPath, importPath
 
 
 # TODO - use import_tracks function to clean the imported list of track / artist names from file or array
@@ -332,7 +332,7 @@ def import_tracks(importPath):
     # TODO - import dirty tracks from file
 
     # # Read the file
-    # with open(os.path.join(exportPath, args.clean), "r") as file:
+    # with open(os.path.join(exportPath, importPath), "r") as file:
     #     if not file.readable():
     #         print("Error: The file is not readable.")
     #         sys.exit(1)
@@ -465,9 +465,9 @@ def copy_to_clipboard(cleaned_list):
 
 
 def write_tracks(cleaned_list, playlist_name, exportPath):
-    # Clean export path
+    # Clean exportPath
     exportPath = os.path.join(exportPath, "")
-    
+
     # Write the tracks to a file
     with open(os.path.join(exportPath, playlist_name), "w") as file:
         if not file.writable():
@@ -528,62 +528,68 @@ def main():
         sys.exit(1)
 
     # Test path
-    if args.path:
-        if not os.path.isdir(args.path):
+    if args.exportPath:
+        if not os.path.isdir(args.exportPath):
             print("Error: Invalid export path.")
             sys.exit(1)
-
+    if args.importPath:
+        if not os.path.isdir(args.importPath):
+            print("Error: Invalid import path.")
+            sys.exit(1)
 
     # TODO - rename playlistID or playlist_id
-    client_id, client_secret, exportPath, playlistID = read_config()
+    client_id, client_secret, playlistID, exportPath, importPath = read_config()
 
-
-    # TODO - verify arguments
     # If command-line arguments were provided, use them instead of the values from the config file
     if args.playlist:
         playlistID = args.playlist
-    if args.path:
-        exportPath = args.path
+    if args.exportPath:
+        exportPath = args.exportPath
+    if args.importPath:
+        importPath = args.importPath
 
+    cleaned_list = []
 
-
-    # TODO - enable condition
-    # if args.importPath
-    # {
-    #     import_tracks(importPath)
-    #     Returns: dirty_list
-    # }
-    # else
-    # {
-    # Get the playlist ID
-    playlist_id = get_playlist_id(playlistID)
-
-    # Create a Spotify client
-    try:
-        client_credentials_manager = SpotifyClientCredentials(
-            client_id=client_id, client_secret=client_secret
-        )
-    except SpotifyException:
-        print("Error: Invalid Spotify API credentials.")
-        sys.exit(1)
-
-    sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
-
-    # Get the playlist name and tracks
-    playlist_name = get_playlist_name(playlist_id, sp)
-    cleaned_list = get_playlist_tracks(playlist_id, playlist_name, sp)
-    # }
-    
-    
-
-    if args.csv:
-        playlist_name = f"{playlist_name}.csv"
-        write_tracks(cleaned_list, playlist_name, exportPath)
-    elif args.txt:
-        playlist_name = f"{playlist_name}.txt"
-        write_tracks(cleaned_list, playlist_name, exportPath)
+    if args.importPath:
+        dirty_list = import_tracks(importPath)
+        cleaned_list = clean_tracks(dirty_list)
     else:
-        copy_to_clipboard(cleaned_list)
+        # Get the playlist ID
+        playlist_id = get_playlist_id(playlistID)
+
+        # Create a Spotify client
+        try:
+            client_credentials_manager = SpotifyClientCredentials(
+                client_id=client_id, client_secret=client_secret
+            )
+        except SpotifyException:
+            print("Error: Invalid Spotify API credentials.")
+            sys.exit(1)
+
+        sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+
+        # Get the playlist name and tracks
+        playlist_name = get_playlist_name(playlist_id, sp)
+        cleaned_list = get_playlist_tracks(playlist_id, playlist_name, sp)
+
+    if args.importPath:
+        playlist_name = "Cleaned Tracks"
+
+        if args.csv:
+            write_tracks(cleaned_list, f"{playlist_name}.csv", exportPath)
+        elif args.txt:
+            write_tracks(cleaned_list, f"{playlist_name}.txt", exportPath)
+        else:
+            copy_to_clipboard(cleaned_list)
+    else:
+        if args.csv:
+            playlist_name = f"{playlist_name}.csv"
+            write_tracks(cleaned_list, playlist_name, exportPath)
+        elif args.txt:
+            playlist_name = f"{playlist_name}.txt"
+            write_tracks(cleaned_list, playlist_name, exportPath)
+        else:
+            copy_to_clipboard(cleaned_list)
 
 
 if __name__ == "__main__":

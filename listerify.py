@@ -209,7 +209,6 @@ def copy_to_clipboard(cleaned_list):
 
 
 def main():
-
     args = parse_args()
 
     # Validate command-line arguments

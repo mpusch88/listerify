@@ -15,6 +15,7 @@ from spotipy.exceptions import SpotifyException
 # TODO - generate config.ini if not found or make config optional (?)
 # TODO - add config parameter for default export type / format
 # TODO - add exclusions list to remove certain words from track names
+# TODO - code platform specific clipboard copy functions instead of using pyperclip
 # TODO - remove "with" from track names if name contains more than 5 words (?)
 # TODO - link to nic config.ini (?)
 # TODO - optimize and clean up code

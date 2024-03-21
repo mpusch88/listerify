@@ -269,7 +269,12 @@ def read_config():
     # Set remaining configuration values
     playlistID = config.get("Spotify", "defaultPlaylistID")
     exportPath = config.get("General", "exportPath")
-    importFile = config.get("General", "importFile")
+    
+    # Check if an import file was provided
+    if config.has_option("General", "importFile"):
+        importFile = config.get("General", "importFile")
+    else:
+        importFile = None
 
     # Test paths
     if not os.path.isdir(exportPath):

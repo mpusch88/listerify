@@ -7,6 +7,7 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.exceptions import SpotifyException
 
 
+# TODO - delete testList
 testList = [
     "Stories In Light Trilucid",
     "Supermode Tell Me Why James Carter Extended Remix",
@@ -202,48 +203,6 @@ testList = [
 ]
 
 
-# Overview:
-
-# parse_args()
-# Returns:
-# args.playlist
-# args.exportPath
-# args.importPath
-# args.txt
-# args.csv
-
-
-# read_config()
-# Returns: client_id, client_secret, importPath, exportPath, playlistID
-
-# Either:
-# {
-# import_tracks(importPath)
-# Returns: dirty_list
-# }
-
-# Or:
-# {
-# get_playlist_id(playlistID)
-# Returns: playlistID
-
-# get_playlist_name(playlist_id, sp)
-# Returns: playlist_name
-
-# get_playlist_tracks(playlist_id, playlist_name, sp)
-# Returns: dirty_list
-# }
-
-# clean_tracks(dirty_list)
-# Returns: cleaned_list
-
-# write_tracks(cleaned_list, playlist_name, exportPath)
-# Returns: success boolean
-
-# copy_to_clipboard(cleaned_list)
-# Returns: success boolean
-
-
 # TODO - use arg names listed above
 # TODO - add / update shell profile instructions to readme
 # TODO - add option to clean imported list of track / artist names from file
@@ -253,9 +212,12 @@ testList = [
 # TODO - add CLI args for playlistID, exportPath, and CSV export option
 # TODO - generate config.ini if not found or make config optional (?)
 # TODO - test readme instructions for all system types
+# TODO - write tests for all functions
+# TODO - update REAMDE
 # TODO - optimize and clean up code
+# TODO - remove nicotine banned words from track names
 # TODO - add config parameter for default export type / format
-# TODO - add config parameter for import files (spotify lists have priority) (importPath)
+# TODO - add config parameter for import files (spotify lists have priority) (importFile)
 # TODO - add error handling for missing config.ini
 # TODO - add error handling for missing playlistID
 # TODO - add error handling for invalid playlistID
@@ -275,7 +237,7 @@ def parse_args():
         "--exportPath", type=str, help="The path where the playlist will be exported."
     )
     parser.add_argument(
-        "--importPath",
+        "--importFile",
         type=str,
         nargs="?",
         help="The path where the imported list of track / artist names is located.",
@@ -307,51 +269,31 @@ def read_config():
     # Set remaining configuration values
     playlistID = config.get("Spotify", "defaultPlaylistID")
     exportPath = config.get("General", "exportPath")
-    importPath = config.get("General", "importPath")
+    importFile = config.get("General", "importFile")
 
     # Test paths
     if not os.path.isdir(exportPath):
         print("Error: Invalid export path.")
         sys.exit(1)
 
-    if importPath and not os.path.isdir(importPath):
+    if importFile and not os.path.isfile(importFile):
         print("Error: Invalid import path.")
         sys.exit(1)
 
-    # TODO - ensure correct order
-    return client_id, client_secret, playlistID, exportPath, importPath
+    return client_id, client_secret, playlistID, exportPath, importFile
 
 
-# TODO - use import_tracks function to clean the imported list of track / artist names from file or array
-def import_tracks(importPath):
+def import_tracks(importFile):
     dirty_list = []
 
-    # Clean import path
-    importPath = os.path.join(importPath, "")
+    print(f"Importing tracks from {importFile}...")
 
-    # TODO - import dirty tracks from file
+    with open(importFile, "r") as file:
+        if not file.readable():
+            print("Error: The file is not readable.")
+            sys.exit(1)
 
-    # # Read the file
-    # with open(os.path.join(exportPath, importPath), "r") as file:
-    #     if not file.readable():
-    #         print("Error: The file is not readable.")
-    #         sys.exit(1)
-
-    #     # Read the file and remove all non alphanumeric characters
-    #     trackList = file.read()
-    #     trackList = "".join(e for e in trackList if e.isalnum() or e.isspace())
-
-    #     # Replace unknown ascii characters with blank spaces
-    #     trackList = "".join([c if ord(c) < 128 else " " for c in trackList])
-
-    #     # Remove duplicate words
-    #     trackList = " ".join(dict.fromkeys(trackList.split()))
-
-    #     # Remove double spaces
-    #     trackList = trackList.replace("  ", " ")
-
-    #     # Write the cleaned list to resultList
-    #     resultList.append(trackList)
+        dirty_list = file.read().splitlines()
 
     return dirty_list
 
@@ -399,14 +341,27 @@ def get_playlist_tracks(playlist_id, playlist_name, sp):
         return dirty_list
 
 
-# TODO - use clean_tracks function to clean any list of track / artist names
-def clean_tracks(dirty_list):
+def clean_tracks(list):
+    for i in range(len(list)):
+        # remove 'feat.', 'ft.', 'ft', 'featuring' from item
+        list[i] = list[i].replace("featuring", "")
+        list[i] = list[i].replace("feat.", "")
+        list[i] = list[i].replace("ft.", "")
+        list[i] = list[i].replace("ft", "")
 
-    cleaned_list = []
+        # remove all non alphanumeric characters from item
+        list[i] = "".join(e if e.isalnum() or e.isspace() else " " for e in list[i])
 
-    # TODO - clean dirty_list
+        # Replace unknown ascii characters in item with blank spaces
+        list[i] = "".join([c if ord(c) < 128 else " " for c in list[i]])
 
-    return cleaned_list
+        # remove duplicate words from item
+        list[i] = " ".join(dict.fromkeys(list[i].split()))
+
+        # remove double spaces from item
+        list[i] = list[i].replace("  ", " ")
+
+    return list
 
 
 def write_tracks(cleaned_list, playlist_name, exportPath):
@@ -421,100 +376,34 @@ def write_tracks(cleaned_list, playlist_name, exportPath):
 
         file.write(",")
 
-        for item in cleaned_list["items"]:
-            track = item["track"]
-            artist_names = [artist["name"] for artist in track["artists"]]
-
-            # Concatenate track name and artist names into a single string
-            track_and_artist = f"{track['name']} {' '.join(artist_names)}"
-
-            # TODO - move cleaning to separate function, write single string to file
-            # remove 'feat.', 'ft.', 'ft', 'featuring' from track_and_artist
-            track_and_artist = track_and_artist.replace("featuring", "")
-            track_and_artist = track_and_artist.replace("feat.", "")
-            track_and_artist = track_and_artist.replace("ft.", "")
-            track_and_artist = track_and_artist.replace("ft", "")
-
-            # remove all non alphanumeric characters from track_and_artist
-            track_and_artist = "".join(
-                e for e in track_and_artist if e.isalnum() or e.isspace()
-            )
-
-            # Replace unknown ascii characters in track_and_artist with blank spaces
-            track_and_artist = "".join(
-                [c if ord(c) < 128 else " " for c in track_and_artist]
-            )
-
-            # remove duplicate words from track_and_artist
-            track_and_artist = " ".join(dict.fromkeys(track_and_artist.split()))
-
-            # remove double spaces from track_and_artist
-            track_and_artist = track_and_artist.replace("  ", " ")
-
+        for index, item in enumerate(cleaned_list):
             # Write the string to the text file
-            if item != cleaned_list["items"][-1]:
-                file.write(f"'{track_and_artist}', ")
+            if index != len(cleaned_list) - 1:
+                file.write(f"'{item}', ")
             else:
-                file.write(f"'{track_and_artist}'")
+                file.write(f"'{item}'")
 
-        # If all tracks were written to the file, display the total number of tracks
+        # If tracks were written to the file, display the total number of tracks
         print(
-            f"Successfully wrote {cleaned_list['total']} {'track' if cleaned_list['total'] == 1 else 'tracks'} to {exportPath}{playlist_name}"
+            f"Successfully wrote {len(cleaned_list)} {'track' if len(cleaned_list) == 1 else 'tracks'} to {playlist_name}."
         )
 
 
 def copy_to_clipboard(cleaned_list):
-    # TODO - rename resultList (?)
-    resultList = []
+    # Join the list with commas and add a leading comma
+    result_string = ", " + ", ".join([f"'{track}'" for track in cleaned_list])
 
-    # TODO - handle this elsewhere (?)
-    # Convert results to a string
-    for item in cleaned_list["items"]:
-        track = item["track"]
-        artist_names = [artist["name"] for artist in track["artists"]]
-
-        # Concatenate track name and artist names into a single string
-        track_and_artist = f"{track['name']} {' '.join(artist_names)}"
-
-        # remove 'feat.', 'ft.', 'ft', 'featuring' from track_and_artist
-        track_and_artist = track_and_artist.replace("featuring", "")
-        track_and_artist = track_and_artist.replace("feat.", "")
-        track_and_artist = track_and_artist.replace("ft.", "")
-        track_and_artist = track_and_artist.replace("ft", "")
-
-        # remove all non alphanumeric characters from track_and_artist
-        track_and_artist = "".join(
-            e for e in track_and_artist if e.isalnum() or e.isspace()
-        )
-
-        # Replace unknown ascii characters in track_and_artist with blank spaces
-        track_and_artist = "".join(
-            [c if ord(c) < 128 else " " for c in track_and_artist]
-        )
-
-        # remove duplicate words from track_and_artist
-        track_and_artist = " ".join(dict.fromkeys(track_and_artist.split()))
-
-        # remove double spaces from track_and_artist
-        track_and_artist = track_and_artist.replace("  ", " ")
-
-        # Append the track_and_artist to the resultList
-        resultList.append(track_and_artist)
-
-    # Join the resultList with commas and add a leading comma
-    result_string = ", " + ", ".join(resultList)
-
+    # TODO - test on windows and linux
     # Copy the result_string to the clipboard
     if sys.platform == "win32":
-        # TODO - remove newline from end of result_string
-        os.system(f"echo {result_string} | clip")
+        os.system(f"echo|set /p={result_string} | clip")
     elif sys.platform == "darwin":
-        os.system(f'echo "{result_string}" | pbcopy')
+        os.system(f'echo "{result_string}" | tr -d "\n" | pbcopy')
     elif sys.platform == "linux":
-        os.system(f'echo "{result_string}" | xclip -selection clipboard')
+        os.system(f'echo "{result_string}" | tr -d "\n" | xclip -selection clipboard')
 
     print(
-        f"Copied {cleaned_list['total']} {'track' if cleaned_list['total'] == 1 else 'tracks'} to clipboard."
+        f"Copied {len(cleaned_list)} {'track' if len(cleaned_list) == 1 else 'tracks'} to clipboard."
     )
 
 
@@ -532,26 +421,30 @@ def main():
         if not os.path.isdir(args.exportPath):
             print("Error: Invalid export path.")
             sys.exit(1)
-    if args.importPath:
-        if not os.path.isdir(args.importPath):
+    if args.importFile:
+        if not os.path.isfile(args.importFile):
             print("Error: Invalid import path.")
             sys.exit(1)
 
     # TODO - rename playlistID or playlist_id
-    client_id, client_secret, playlistID, exportPath, importPath = read_config()
+    client_id, client_secret, playlistID, exportPath, importFile = read_config()
 
     # If command-line arguments were provided, use them instead of the values from the config file
     if args.playlist:
         playlistID = args.playlist
     if args.exportPath:
         exportPath = args.exportPath
-    if args.importPath:
-        importPath = args.importPath
+    if args.importFile:
+        importFile = args.importFile
 
     cleaned_list = []
 
-    if args.importPath:
-        dirty_list = import_tracks(importPath)
+    if importFile:
+
+        # TODO - test and remove testList
+        # dirty_list = testList
+
+        dirty_list = import_tracks(importFile)
         cleaned_list = clean_tracks(dirty_list)
     else:
         # Get the playlist ID
@@ -572,7 +465,7 @@ def main():
         playlist_name = get_playlist_name(playlist_id, sp)
         cleaned_list = get_playlist_tracks(playlist_id, playlist_name, sp)
 
-    if args.importPath:
+    if importFile:
         playlist_name = "Cleaned Tracks"
 
         if args.csv:

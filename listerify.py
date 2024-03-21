@@ -157,11 +157,12 @@ def get_playlist_tracks(playlist_id, playlist_name, sp):
 
 def clean_tracks(list):
     for i in range(len(list)):
-        # remove 'feat.', 'ft.', 'ft', 'featuring' from item
-        list[i] = list[i].replace("featuring", "")
-        list[i] = list[i].replace("feat.", "")
-        list[i] = list[i].replace("ft.", "")
-        list[i] = list[i].replace("ft", "")
+        # remove 'feat.', 'feat', 'ft.', 'ft', 'featuring' from item
+        list[i] = list[i].replace(" featuring", "")
+        list[i] = list[i].replace(" feat.", "")
+        list[i] = list[i].replace(" ft.", "")
+        list[i] = list[i].replace(" feat ", " ")
+        list[i] = list[i].replace(" ft ", " ")
 
         # remove all non alphanumeric characters from item
         list[i] = "".join(e if e.isalnum() or e.isspace() else " " for e in list[i])
@@ -205,15 +206,6 @@ def copy_to_clipboard(cleaned_list):
     # Join the list with commas and add a leading comma
     result_string = ", " + ", ".join([f"'{track}'" for track in cleaned_list])
     pyperclip.copy(result_string.strip())
-
-    # TODO - test & remove
-    
-    # if sys.platform == "win32":
-    #     pyperclip.copy(result_string.strip())
-    # elif sys.platform == "darwin":
-    #     os.system(f'echo "{result_string}" | tr -d "\n" | pbcopy')
-    # elif sys.platform == "linux":
-    #     os.system(f'echo "{result_string}" | tr -d "\n" | xclip -selection clipboard')
 
     print(
         f"Copied {len(cleaned_list)} {'track' if len(cleaned_list) == 1 else 'tracks'} to clipboard."

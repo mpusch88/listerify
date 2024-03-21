@@ -203,21 +203,15 @@ testList = [
 ]
 
 
-# TODO - use arg names listed above
-# TODO - add / update shell profile instructions to readme
-# TODO - add option to clean imported list of track / artist names from file
-# TODO - add option for export format (CSV, TXT, etc.)
-# TODO - remove "with" from track names if name contains more than 5 words
-# TODO - list filesnames that contain invalid characters before writing to file
-# TODO - add CLI args for playlistID, exportPath, and CSV export option
-# TODO - generate config.ini if not found or make config optional (?)
-# TODO - test readme instructions for all system types
-# TODO - write tests for all functions
-# TODO - update REAMDE
-# TODO - optimize and clean up code
+# TODO - add / update shell profile instructions to REAMDE
+# TODO - remove "with" from track names if name contains more than 5 words (?)
 # TODO - remove nicotine banned words from track names
+# TODO - generate config.ini if not found or make config optional (?)
+# TODO - update REAMDE, test instructions for all system types
+# TODO - write tests for all functions
+# TODO - optimize and clean up code
 # TODO - add config parameter for default export type / format
-# TODO - add config parameter for import files (spotify lists have priority) (importFile)
+# TODO - give spotify playlist ID args priority over importFile
 # TODO - add error handling for missing config.ini
 # TODO - add error handling for missing playlistID
 # TODO - add error handling for invalid playlistID

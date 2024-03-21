@@ -9,22 +9,18 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.exceptions import SpotifyException
 
 
-# TODO - add / update shell profile instructions to REAMDE
-# TODO - remove "with" from track names if name contains more than 5 words (?)
-# TODO - generate config.ini if not found or make config optional (?)
-# TODO - update REAMDE, test instructions for all system types
-# TODO - write tests for all functions
-# TODO - optimize and clean up code
+# TODO - add error handling for all config sections / properties
 # TODO - enable exporting multiple formats at once
-# TODO - add config parameter for default export type / format
 # TODO - give spotify playlist ID args priority over importFile
+# TODO - generate config.ini if not found or make config optional (?)
+# TODO - add config parameter for default export type / format
 # TODO - add exclusions list to remove certain words from track names
+# TODO - remove "with" from track names if name contains more than 5 words (?)
 # TODO - link to nic config.ini (?)
-# TODO - add error handling for missing config.ini
-# TODO - add error handling for missing playlistID
-# TODO - add error handling for invalid playlistID
-# TODO - add error handling for missing exportPath
-# TODO - add error handling for invalid exportPath
+# TODO - optimize and clean up code
+# TODO - write tests for all functions
+# TODO - update REAMDE, test instructions for all system types
+# TODO - fix shell profile instructions in REAMDE
 # TODO - rename to zigzag
 
 

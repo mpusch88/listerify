@@ -237,10 +237,10 @@ testList = [
 # clean_tracks(dirty_list)
 # Returns: cleaned_list
 
-# copy_to_clipboard(cleaned_list)
+# write_tracks(cleaned_list, playlist_name, exportPath)
 # Returns: success boolean
 
-# write_tracks(cleaned_list, playlist_name, exportPath)
+# copy_to_clipboard(cleaned_list)
 # Returns: success boolean
 
 
@@ -409,6 +409,60 @@ def clean_tracks(dirty_list):
     return cleaned_list
 
 
+def write_tracks(cleaned_list, playlist_name, exportPath):
+    # Clean exportPath
+    exportPath = os.path.join(exportPath, "")
+
+    # Write the tracks to a file
+    with open(os.path.join(exportPath, playlist_name), "w") as file:
+        if not file.writable():
+            print("Error: The file is not writable.")
+            sys.exit(1)
+
+        file.write(",")
+
+        for item in cleaned_list["items"]:
+            track = item["track"]
+            artist_names = [artist["name"] for artist in track["artists"]]
+
+            # Concatenate track name and artist names into a single string
+            track_and_artist = f"{track['name']} {' '.join(artist_names)}"
+
+            # TODO - move cleaning to separate function, write single string to file
+            # remove 'feat.', 'ft.', 'ft', 'featuring' from track_and_artist
+            track_and_artist = track_and_artist.replace("featuring", "")
+            track_and_artist = track_and_artist.replace("feat.", "")
+            track_and_artist = track_and_artist.replace("ft.", "")
+            track_and_artist = track_and_artist.replace("ft", "")
+
+            # remove all non alphanumeric characters from track_and_artist
+            track_and_artist = "".join(
+                e for e in track_and_artist if e.isalnum() or e.isspace()
+            )
+
+            # Replace unknown ascii characters in track_and_artist with blank spaces
+            track_and_artist = "".join(
+                [c if ord(c) < 128 else " " for c in track_and_artist]
+            )
+
+            # remove duplicate words from track_and_artist
+            track_and_artist = " ".join(dict.fromkeys(track_and_artist.split()))
+
+            # remove double spaces from track_and_artist
+            track_and_artist = track_and_artist.replace("  ", " ")
+
+            # Write the string to the text file
+            if item != cleaned_list["items"][-1]:
+                file.write(f"'{track_and_artist}', ")
+            else:
+                file.write(f"'{track_and_artist}'")
+
+        # If all tracks were written to the file, display the total number of tracks
+        print(
+            f"Successfully wrote {cleaned_list['total']} {'track' if cleaned_list['total'] == 1 else 'tracks'} to {exportPath}{playlist_name}"
+        )
+
+
 def copy_to_clipboard(cleaned_list):
     # TODO - rename resultList (?)
     resultList = []
@@ -462,60 +516,6 @@ def copy_to_clipboard(cleaned_list):
     print(
         f"Copied {cleaned_list['total']} {'track' if cleaned_list['total'] == 1 else 'tracks'} to clipboard."
     )
-
-
-def write_tracks(cleaned_list, playlist_name, exportPath):
-    # Clean exportPath
-    exportPath = os.path.join(exportPath, "")
-
-    # Write the tracks to a file
-    with open(os.path.join(exportPath, playlist_name), "w") as file:
-        if not file.writable():
-            print("Error: The file is not writable.")
-            sys.exit(1)
-
-        file.write(",")
-
-        for item in cleaned_list["items"]:
-            track = item["track"]
-            artist_names = [artist["name"] for artist in track["artists"]]
-
-            # Concatenate track name and artist names into a single string
-            track_and_artist = f"{track['name']} {' '.join(artist_names)}"
-
-            # TODO - move cleaning to separate function, write single string to file
-            # remove 'feat.', 'ft.', 'ft', 'featuring' from track_and_artist
-            track_and_artist = track_and_artist.replace("featuring", "")
-            track_and_artist = track_and_artist.replace("feat.", "")
-            track_and_artist = track_and_artist.replace("ft.", "")
-            track_and_artist = track_and_artist.replace("ft", "")
-
-            # remove all non alphanumeric characters from track_and_artist
-            track_and_artist = "".join(
-                e for e in track_and_artist if e.isalnum() or e.isspace()
-            )
-
-            # Replace unknown ascii characters in track_and_artist with blank spaces
-            track_and_artist = "".join(
-                [c if ord(c) < 128 else " " for c in track_and_artist]
-            )
-
-            # remove duplicate words from track_and_artist
-            track_and_artist = " ".join(dict.fromkeys(track_and_artist.split()))
-
-            # remove double spaces from track_and_artist
-            track_and_artist = track_and_artist.replace("  ", " ")
-
-            # Write the string to the text file
-            if item != cleaned_list["items"][-1]:
-                file.write(f"'{track_and_artist}', ")
-            else:
-                file.write(f"'{track_and_artist}'")
-
-        # If all tracks were written to the file, display the total number of tracks
-        print(
-            f"Successfully wrote {cleaned_list['total']} {'track' if cleaned_list['total'] == 1 else 'tracks'} to {exportPath}{playlist_name}"
-        )
 
 
 def main():

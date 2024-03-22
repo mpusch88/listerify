@@ -9,6 +9,7 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.exceptions import SpotifyException
 
 
+# TODO - ensure all variable names make sense
 # TODO - add error handling for all config sections / properties
 # TODO - enable exporting multiple formats at once
 # TODO - give spotify playlist ID args priority over importFile
@@ -16,7 +17,6 @@ from spotipy.exceptions import SpotifyException
 # TODO - add config parameter for default export type / format
 # TODO - add exclusions list to remove certain words from track names
 # TODO - code platform specific clipboard copy functions instead of using pyperclip
-# TODO - remove "with" from track names if name contains more than 5 words (?)
 # TODO - link to nic config.ini (?)
 # TODO - optimize and clean up code
 # TODO - write tests for all functions
@@ -149,7 +149,14 @@ def get_playlist_tracks(playlist_id, playlist_name, sp):
         print(f"Error: Playlist '{playlist_name}' does not contain any tracks.")
         sys.exit(1)
     else:
-        return dirty_list
+        list_tracks = []
+        
+        for item in dirty_list["items"]:
+            artists = [artist['name'] for artist in item['track']['artists']]
+            track_and_artist = f"{item['track']['name']} {' '.join(artists)}"
+            list_tracks.append(track_and_artist)
+        
+        return list_tracks
 
 
 def clean_tracks(list):
@@ -160,6 +167,11 @@ def clean_tracks(list):
         list[i] = list[i].replace(" ft.", "")
         list[i] = list[i].replace(" feat ", " ")
         list[i] = list[i].replace(" ft ", " ")
+
+        # remove "with" if line has more than 5 words
+        if len(list[i].split()) > 5:
+            list[i] = list[i].replace(" with ", " ")
+            list[i] = list[i].replace("(with ", "")
 
         # remove all non alphanumeric characters from item
         list[i] = "".join(e if e.isalnum() or e.isspace() else " " for e in list[i])
@@ -260,8 +272,8 @@ def main():
 
         # Get the playlist name and tracks
         playlist_name = get_playlist_name(playlist_id, sp)
-        cleaned_list = get_playlist_tracks(playlist_id, playlist_name, sp)
-
+        cleaned_list = clean_tracks(get_playlist_tracks(playlist_id, playlist_name, sp))
+        
     if importFile:
         playlist_name = "Cleaned Tracks"
 

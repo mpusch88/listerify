@@ -147,7 +147,7 @@ def get_playlist_tracks(playlist_id, playlist_name, sp):
         sys.exit(1)
 
     if dirty_list["total"] == 0:
-        print(f"Error: Playlist '{playlist_name}' does not contain any tracks.")
+        print(f"Playlist '{playlist_name}' does not contain any tracks.")
         sys.exit(1)
     else:
         list_tracks = []

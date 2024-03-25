@@ -1,6 +1,6 @@
 # Listerify
 
-Listerify is a Python script that uses the Spotify API to save Spotify playlists to a CSV file.
+Listerify is a Python script that uses the Spotify API to save tracks from Spotify playlists. (WIP)
 
 ## Requirements
 
@@ -55,8 +55,9 @@ The file should be located in the same directory as `listerify.py` and have the 
 [Spotify]
 client_id = <your_client_id>
 client_secret = <your_client_secret>
-exportPath = <path_to_export_file>
-defaultPlaylistID = <default_playlist_id>
+exportPath = <folder_to_store_export_file>
+importFile = <path_to_import_file>
+playlistID = <default_playlist_id>
 ```
 
 Where:
@@ -74,9 +75,18 @@ A Spotify playlist ID can be provided when running the script as follows:
 python listerify.py <playlist_id>
 ```
 
+The following arguments can be added:
+
+    - A playlist ID can optionally be provided as the first argument.
+    `--txt` - Outputs to text file
+    `--csv` - Outputs to CSV
+    `--importFile <pathToImportFile>` - Will clean tracks from the import file instead of Spotify.
+
+Note that only one of the `txt` or `csv` outputs can be selected at a time.
+
 If no playlist is provided, the script will use the defined default playlist ID. If no default playlist ID is defined, the script will prompt the user to enter one.
 
-Note that running this script will generate a cache file in the same directory as `listerify.py` called `.cache`. This file is used to store the user's Spotify access token and should not be deleted.
+Note that running this script will generate a cache file in the same directory as `listerify.py` called `.cache`. This fle is used to store thei user's Spotify access token and should not be deleted.
 
 ## License
 

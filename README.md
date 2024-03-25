@@ -51,7 +51,7 @@ The `config.ini` file should be located in the same directory as `listerify.py` 
 [Spotify]
 client_id = your_spotify_client_id
 client_secret = your_spotify_client_secret
-playlistID = your_spotify_playlist_id
+playlist = your_spotify_playlist_id
 
 [General]
 exportPath = path_to_export_directory
@@ -62,7 +62,7 @@ Where:
 
 - `client_id` is your Spotify application's client ID. (example: `client_id = 1234567890abcdef1234567890abcdef`)
 - `client_secret` is your Spotify application's client secret. (example: `client_secret = 987654321`)
-- `playlistID` (Optional) The default Spotify playlist ID to get data from. Can be left empty to prompt the user for a playlist ID. (example: `playlistID = 5LNJmXPclDxbncKlzqYVdw`)
+- `playlist` (Optional) The default Spotify playlist ID to get data from. Can be left empty to prompt the user for a playlist ID. (example: `playlist = 5LNJmXPclDxbncKlzqYVdw`)
 - `exportPath`: The directory where the playlist will be exported. (example: `exportPath = "C:\Users\user\Desktop"`)
 - `importFile`: (Optional) Path to a file containing a list of track / artist names to import. (example: `importFile = "C:\Users\user\Documents\tracks.txt"`)
 

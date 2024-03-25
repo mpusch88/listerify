@@ -33,7 +33,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Process Spotify playlist.")
 
     parser.add_argument(
-        "playlist", type=str, nargs="?", help="The URL or ID of the Spotify playlist."
+        "--playlist", type=str, help="The URL or ID of the Spotify playlist."
     )
     parser.add_argument(
         "--exportPath", type=str, help="The path where the playlist will be exported."
@@ -258,7 +258,7 @@ def write_tracks(cleaned_list, playlist_name, exportPath):
     exportPath = os.path.join(exportPath, "")
 
     # Write the tracks to a file
-    with open(os.path.join(exportPath, playlist_name), "w") as file:
+    with open(os.path.join(exportPath, playlist_name), "w", encoding="utf-8") as file:
         if not file.writable():
             print("Error: The file is not writable.")
             sys.exit(1)

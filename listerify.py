@@ -215,7 +215,7 @@ def get_playlist_tracks(playlist_id, playlist_name, sp):
 
         for item in dirty_list["items"]:
             artists = [artist["name"] for artist in item["track"]["artists"]]
-            track_and_artist = f"{item['track']['name']} {' '.join(artists)}"
+            track_and_artist = f"{item['track']['name']} - {', '.join(artists)}"
             list_tracks.append(track_and_artist)
 
         return list_tracks
@@ -338,7 +338,14 @@ def main():
 
         # Get the playlist name and tracks
         playlist_name = get_playlist_name(playlist_id, sp)
-        cleaned_list = clean_tracks(get_playlist_tracks(playlist_id, playlist_name, sp))
+
+        # Clean tracks unless writing to file
+        if args.csv or args.txt:
+            cleaned_list = get_playlist_tracks(playlist_id, playlist_name, sp)
+        else:
+            cleaned_list = clean_tracks(
+                get_playlist_tracks(playlist_id, playlist_name, sp)
+            )
 
     if importFile:
         playlist_name = "Cleaned Tracks"

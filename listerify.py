@@ -9,6 +9,7 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.exceptions import SpotifyException
 
 
+# TODO - accept album and track IDs as well as playlist IDs
 # TODO - give spotify playlist ID args priority over importFile
 # TODO - ensure all variable names make sense
 # TODO - add error handling for all config sections / properties
@@ -16,13 +17,15 @@ from spotipy.exceptions import SpotifyException
 # TODO - add config parameter for default export type / format
 # TODO - add exclusions list to remove certain words from track names
 # TODO - remove "x" from artist names (?)
-# TODO - link to nic config.ini (?)
+# TODO - link to external config (?)
 # TODO - code platform specific clipboard copy functions instead of using pyperclip
+# TODO - add interface (?)
+# TODO - rust version (?)
 # TODO - optimize and clean up code
 # TODO - write tests for all functions
 # TODO - update REAMDE, test instructions for all system types
 # TODO - fix shell profile instructions in REAMDE
-# TODO - rename to zigzag
+# TODO - rename (zz)
 
 
 def parse_args():

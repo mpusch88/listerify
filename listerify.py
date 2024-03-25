@@ -84,8 +84,24 @@ def create_config():
 
     # Validate the export path
     while not os.path.isdir(export_path):
-        export_path = input("Please enter a valid export path: ")
+        if os.path.exists(os.path.dirname(export_path)):
+            # Ask the user if they want to create the directory
+            create_dir = input(
+                "The directory does not exist. Do you want to create it? (y/n): "
+            )
 
+            if create_dir.lower() == "y":
+                try:
+                    os.makedirs(export_path)
+                except OSError as e:
+                    print(f"Error: {e}")
+                    export_path = input("Please enter a valid export path: ")
+            else:
+                export_path = input("Please enter a valid export path: ")
+        else:
+            export_path = input("Please enter a valid export path: ")
+
+    # Set the default configuration values
     config["General"] = {
         "exportPath": export_path,
         "importFile": "",

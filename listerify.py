@@ -9,15 +9,15 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.exceptions import SpotifyException
 
 
+# TODO - give spotify playlist ID args priority over importFile
 # TODO - ensure all variable names make sense
 # TODO - add error handling for all config sections / properties
 # TODO - enable exporting multiple formats at once
-# TODO - give spotify playlist ID args priority over importFile
 # TODO - add config parameter for default export type / format
 # TODO - add exclusions list to remove certain words from track names
 # TODO - remove "x" from artist names (?)
-# TODO - code platform specific clipboard copy functions instead of using pyperclip
 # TODO - link to nic config.ini (?)
+# TODO - code platform specific clipboard copy functions instead of using pyperclip
 # TODO - optimize and clean up code
 # TODO - write tests for all functions
 # TODO - update REAMDE, test instructions for all system types

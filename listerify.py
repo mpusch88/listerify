@@ -187,10 +187,10 @@ def get_playlist_name(playlist_id, sp):
     try:
         playlist = sp.playlist(playlist_id)
     except SpotifyException:
-        print(
-            f"Error: The playlist with ID {playlist_id} does not exist or could not be accessed."
-        )
-
+        print("Error: The playlist does not exist or could not be accessed.")
+        sys.exit(1)
+    except Exception as e:
+        print(f"Spotify client {str(e)}")
         sys.exit(1)
 
     return playlist["name"]

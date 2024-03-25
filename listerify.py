@@ -13,7 +13,6 @@ from spotipy.exceptions import SpotifyException
 # TODO - add error handling for all config sections / properties
 # TODO - enable exporting multiple formats at once
 # TODO - give spotify playlist ID args priority over importFile
-# TODO - generate config.ini if not found or make config optional (?)
 # TODO - add config parameter for default export type / format
 # TODO - add exclusions list to remove certain words from track names
 # TODO - remove "x" from artist names (?)
@@ -50,6 +49,52 @@ def parse_args():
     )
 
     return parser.parse_args()
+
+
+def create_config():
+    # Create a new configuration file
+    config = configparser.ConfigParser()
+
+    # Ask the user for the Spotify API credentials
+    client_id = input("Enter your Spotify client ID: ")
+    client_secret = input("Enter your Spotify client secret: ")
+
+    # Ask whether the user wants to set a default playlist ID
+    set_playlist_id = input("Do you want to set a default playlist ID? (y/n): ")
+
+    if set_playlist_id.lower() == "y":
+        playlist_id = input("Enter the default playlist ID: ")
+    else:
+        playlist_id = ""
+
+    # Set the default configuration values
+    config["Spotify"] = {
+        "client_id": client_id,
+        "client_secret": client_secret,
+        "playlistID": playlist_id,
+    }
+
+    # Ask if the user wants to set a default export path
+    set_export_path = input("Do you want to set a default export path? (y/n): ")
+
+    if set_export_path.lower() == "y":
+        export_path = input("Enter the default export path: ")
+    else:
+        export_path = os.getcwd()
+
+    # Validate the export path
+    while not os.path.isdir(export_path):
+        export_path = input("Please enter a valid export path: ")
+
+    config["General"] = {
+        "exportPath": export_path,
+        "importFile": "",
+    }
+
+    # Write the configuration to the file
+    with open("config.ini", "w") as file:
+        config.optionxform = str  # Preserve case sensitivity
+        config.write(file)
 
 
 def read_config():
@@ -151,12 +196,12 @@ def get_playlist_tracks(playlist_id, playlist_name, sp):
         sys.exit(1)
     else:
         list_tracks = []
-        
+
         for item in dirty_list["items"]:
-            artists = [artist['name'] for artist in item['track']['artists']]
+            artists = [artist["name"] for artist in item["track"]["artists"]]
             track_and_artist = f"{item['track']['name']} {' '.join(artists)}"
             list_tracks.append(track_and_artist)
-        
+
         return list_tracks
 
 
@@ -240,6 +285,10 @@ def main():
             print("Error: Invalid import file.")
             sys.exit(1)
 
+    # Ensure config.ini exists
+    if not os.path.isfile("config.ini"):
+        create_config()
+
     # TODO - rename playlistID or playlist_id
     client_id, client_secret, playlistID, exportPath, importFile = read_config()
 
@@ -274,7 +323,7 @@ def main():
         # Get the playlist name and tracks
         playlist_name = get_playlist_name(playlist_id, sp)
         cleaned_list = clean_tracks(get_playlist_tracks(playlist_id, playlist_name, sp))
-        
+
     if importFile:
         playlist_name = "Cleaned Tracks"
 

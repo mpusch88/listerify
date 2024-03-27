@@ -9,6 +9,7 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.exceptions import SpotifyException
 
 
+# TODO - put artist first for copy function
 # TODO - accept album and track IDs as well as playlist IDs
 # TODO - give spotify playlist ID args priority over importFile
 # TODO - ensure all variable names make sense

@@ -64,14 +64,14 @@ Where:
 - `client_secret` is your Spotify application's client secret. (example: `client_secret = 987654321`)
 - `playlist` (Optional) The default Spotify playlist ID to get data from. Can be left empty to prompt the user for a playlist ID. (example: `playlist = 5LNJmXPclDxbncKlzqYVdw`)
 - `exportPath`: The directory where the playlist will be exported. (example: `exportPath = "C:\Users\user\Desktop"`)
-- `importFile`: (Optional) Path to a file containing a list of track / artist names to import. (example: `importFile = "C:\Users\user\Documents\tracks.txt"`)
+- `importFile`: (Optional) Path to a file containing a list of track / artist names to import. If file path is provided, the script will ask the user if they want to import the tracks from the file instead of Spotify. (example: `importFile = "C:\Users\user\Documents\tracks.txt"`)
 
 ## Usage
 
 A Spotify playlist ID can be provided when running the script as follows:
 
 ```bash
-python listerify.py <playlist_id> [--importFile <pathToImportFile>| --txt | --csv]
+python listerify.py <playlist_id> [--importFile <pathToImportFile> | --txt | --csv]
 ```
 
 The following arguments can be added:

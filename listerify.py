@@ -29,6 +29,10 @@ from spotipy.exceptions import SpotifyException
 # TODO - rename (zz)
 
 
+# TODO - add config parameter for default export type / format
+# TODO - ask user if they want to use import file
+# TODO - add clipboard arg
+
 def parse_args():
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Process Spotify playlist.")

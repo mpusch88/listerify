@@ -34,6 +34,7 @@ from spotipy.exceptions import SpotifyException
 # TODO - ask user if they want to use import file
 # TODO - add clipboard arg
 
+
 def parse_args():
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Process Spotify playlist.")
@@ -206,28 +207,38 @@ def get_playlist_name(playlist_id, sp):
 
 
 def get_playlist_tracks(playlist_id, playlist_name, sp):
-    # Get the playlist tracks
-    try:
-        dirty_list = sp.playlist_tracks(playlist_id)
-    except SpotifyException:
-        print(
-            f"Error: The playlist with ID {playlist_id} does not exist or could not be accessed."
-        )
+    limit = 100  # Maximum number of tracks per API request
+    offset = 0
+    list_tracks = []
 
-        sys.exit(1)
+    while True:
+        # Get the playlist tracks
+        try:
+            dirty_list = sp.playlist_tracks(playlist_id, offset=offset, limit=limit)
+        except SpotifyException:
+            print(
+                f"Error: The playlist with ID {playlist_id} does not exist or could not be accessed."
+            )
 
-    if dirty_list["total"] == 0:
-        print(f"Playlist '{playlist_name}' does not contain any tracks.")
-        sys.exit(1)
-    else:
-        list_tracks = []
+            sys.exit(1)
+
+        if dirty_list["total"] == 0:
+            print(f"Playlist '{playlist_name}' does not contain any tracks.")
+            sys.exit(1)
 
         for item in dirty_list["items"]:
             artists = [artist["name"] for artist in item["track"]["artists"]]
             track_and_artist = f"{item['track']['name']} - {', '.join(artists)}"
             list_tracks.append(track_and_artist)
 
-        return list_tracks
+        # Check if we need to fetch more tracks
+        if len(dirty_list["items"]) < limit:
+            break
+
+        # Update the offset for the next request
+        offset += limit
+
+    return list_tracks
 
 
 def clean_tracks(list):
@@ -347,6 +358,7 @@ def main():
 
         # Get the playlist name and tracks
         playlist_name = get_playlist_name(playlist_id, sp)
+        print(f"Analyzing playlist '{playlist_name}'.")
 
         # Clean tracks unless writing to file
         if args.csv or args.txt:

@@ -9,6 +9,8 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.exceptions import SpotifyException
 
 
+# TODO - handle cases
+# TODO - keywords (ex. "spencer")
 # TODO - inclulde more info in output files (album, year, etc.)
 # TODO - put artist first for copy function
 # TODO - accept album and track IDs as well as playlist IDs

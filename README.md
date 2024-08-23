@@ -85,7 +85,7 @@ Note that only one of the `txt` or `csv` outputs can be selected at a time.
 
 If no playlist ID argument is provided, the script will use the default playlist ID from `config.ini`. If no default playlist ID is defined, the script will prompt the user to enter one.
 
-Note that running this script will generate a cache file in the same directory as `listerify.py` called `.cache`. This fle is used to store thei user's Spotify access token and should not be deleted.
+Note that running this script will generate a cache file in the same directory as `listerify.py` called `.cache`. This fle is used to store the user's Spotify access token and should not be deleted.
 
 ## License
 
